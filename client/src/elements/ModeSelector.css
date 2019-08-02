@@ -1,0 +1,30 @@
+.DBRadio, .ReadWriteRadio {
+	display: flex;
+	padding: 20px;
+}
+.DBRadio {
+	float: left;
+}
+.ReadWriteRadio {
+	float: right;
+}
+.ModeSelector {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	background-color: white;
+}
+.SourceSelector, .SourceSelector > div {
+	display: flex;
+	align-items: center;
+}
+.SourceSelector > div {
+	border: 2px solid black;
+	margin-left: 10px;
+}
+.SourceSelector .Radio input + label {
+	display: inline-block;
+	font-size: 18px;
+	padding: 8px;
+}
