@@ -113,6 +113,7 @@ class App extends React.Component {
 		let query = {
 			mode: this.state.queryMode,
 			source: this.state.dbChoice,
+			dataType: this.state.dataType,
 		};
 		if (this.state.queryMode === 'read') { // Read
 			query.args = this.state.read;

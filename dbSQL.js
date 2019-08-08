@@ -1,3 +1,5 @@
+const common = require('./common');
+
 const mysql = require('mysql');
 const connection = mysql.createConnection({
 	host:     process.env.MYSQL_host,
@@ -5,7 +7,6 @@ const connection = mysql.createConnection({
 	password: process.env.MYSQL_password,
 	database: process.env.MYSQL_database,
 });
-
 /*
 SQL CSV Columns:
 Heading
@@ -77,6 +78,11 @@ let tableData = { // We fill up this object during CSV read
 	boatPartMeta: new Map(),
 	boatPartFeatures: new Map(),
 };
+/** -----NEEDS TO BE REVISITED-----
+ * Insert row(s) into the minor tables
+ * @param {string} table Table to write to
+ * @param {array} values Array of values to write to
+ */
 const insert = function (table, values) {
 	if (table === 'features') return;
 
@@ -105,9 +111,12 @@ const insert = function (table, values) {
 	});
 
 };
-
+/** -----NEEDS TO BE REVISITED-----
+ * SpecHeadings are a supreme pain in the reare, because I need to test
+ * heading before inserting specheading (Specheading are unique to a heading)
+ */
 const insertSpecHeadings = async() => {
-	connection.connect();
+	// connection.connect();
 
 	let sql = `INSERT INTO \`specHeadings\` (\`heading\`, \`name\`) VALUES `;
 	await tableData.specHeadings.forEach(e => {
@@ -136,16 +145,18 @@ const insertSpecHeadings = async() => {
 		console.log(`Wrote to table \`specHeadings\``);
 	});
 
-	connection.end();
+	// connection.end();
 	return JSON.stringify(tableData.specHeadings);
 };
-
+/** -----NEEDS TO BE REVISITED-----
+ * Incomplete, IIRC. Runs a full DB Insert
+ */
 const runInsert = async () => {
 	// 2. For specHeading
 	tableData.specHeadings.forEach(e => {
 		e.heading = tableData.headings.findIndex(x => x.name === e.headingRaw);
 	});
-	connection.connect();
+	// connection.connect();
 	// 3. Connect to DB and insert
 	for (var t in tableData){
 		if (tableData.hasOwnProperty(t)) {
@@ -157,8 +168,26 @@ const runInsert = async () => {
 			}
 		}
 	}
-	connection.end();
+	// connection.end();
 	return JSON.stringify(tableData);
+}
+/**
+ * Get ID from name for certain fields
+ * Probably avoidable with clever SQL
+ * @param {string} table Table Name
+ * @param {string} name Field value
+ */
+const getFieldRef = async(table, name) => {
+	connection.query({
+		sql: "SELECT * FROM " + table + " WHERE name=?",
+		values: [name]
+	}, (err, rows, fields) => {
+
+		if (err) throw err;
+		if (rows.length > 0) {
+			return rows[0].id;
+		}
+	});
 }
 /**
  * Primary handler for front end requests.
@@ -166,6 +195,7 @@ const runInsert = async () => {
  * @param {object} res Output. Make sure to write any output into res.json
  */
 const handle_req = (req, res) => {
+	connection.connect(); // Stay connected for duration of request
 	const json = req.body;
 	if (json.mode == "read") {
 		//TODO: read
@@ -191,10 +221,58 @@ const handle_req = (req, res) => {
 		16: Size
 		*/
 		let query; // This will contain our query!
-		connection.query("SELECT * FROM parts", (err, rows, fields) => {
+		let inputObj;
+		// READ:
+		// Check fields. This might require multiple reads.
+		if (json.dataType === "parts") {
+			inputObj = common.Part(...{
+				PartID: null,
+				HeadingRef: getFieldRef("heading", json.Heading),
+				Spec_HeadingRef: getFieldRef("specHeading", json.Spec_Heading),
+				Features: json.Features,
+				Model: json.Model,
+				Hyperlink: json.Hyperlink,
+				Source: json.Source,
+				Weight: json.Weight, // This is a min-max range
+				Material_And_Color: json.Material_And_Color,
+				Size: json.Size,
+			});
+		} else { // boatParts
+			inputObj = common.BoatPart(...{
+				BoatPartID: null,
+				BoatRef: json.Boat,
+				PartRef: json.Part,
+				ParentBoatPartRef: json.Parent,
+				LocationRef: getFieldRead("locations", json.Location),
+				Quantity: json.Quantity, // range
+				lcg: json.Center_Of_Gravity.long, // range
+				tcg: json.Center_Of_Gravity.tran, // range
+				vcg: json.Center_Of_Gravity.vert, // range
+				lm: json.Moment_Of_Inertia.long, // range
+				tm: json.Moment_Of_Inertia.tran, // range
+				vm: json.Moment_Of_Inertia.vert, // range
+			});
+		}
+		// Construct where
+		let where = [];
+		for (const key in inputObj) {
+			if (inputObj.hasOwnProperty(key)) {
+				const value = inputObj[key];
+				if (value || value === 0) { // truthy or Zero are valid
+					where.push(key + "=" + value);
+				}
+			}
+		}
+		// where now contains array of where clauses. Join them with ANDs
+		query = "SELECT * FROM `parts` WHERE " + where.join(' AND ');
+
+		connection.query(query, (err, rows, fields) => {
+
 			if (err) throw err;
-			res.json({...rows});
-			// res.json({"success": true});
+			res.json({
+				"success": true,
+				...rows
+			});
 		});
 	} else if (json.mode == "write") {
 		//TODO: write
@@ -203,6 +281,7 @@ const handle_req = (req, res) => {
 			success: false,
 			error: "Invalid mode",
 		});
+		connection.end();
 		return;
 	}
 	// res.json({ ...req.body });

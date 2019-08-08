@@ -11,48 +11,9 @@ const csvPath = process.env.CSV_filename || "data.csv";
 const csv = require('csv-parser');  
 const fs = require('fs');
 
+const common = require('../common');
 const dbSQL = require('../dbSQL');
-//Object Constructors
-function Spec_Heading(name, heading) {
-	return {
-		name: name,
-		heading: heading,
-	}
-}
-function Part(ManufacturerRef, CategoryRef, Model, BuilderID, Electrical, Units, Hyperlink, Source, Weight_Per_Unit, Size) {
-	return {
-		ManufacturerRef: ManufacturerRef,
-		CategoryRef: CategoryRef,
-		Model: Model,
-		BuilderID: BuilderID,
-		Electrical: Electrical,
-		Units: Units,
-		Hyperlink: Hyperlink,
-		Source: Source,
-		Weight_Per_Unit: Weight_Per_Unit,
-		Size: Size,
-	}
-}
-function BoatPart(BoatRef, PartRef, LocationRef, HeadingRef, Spec_HeadingRef, Quantity, ParentRef, CG, Moment, Material_And_Color ) {
-	return {
-		BoatRef: BoatRef,
-		PartRef: PartRef,
-		LocationRef: LocationRef,
-		HeadingRef: HeadingRef,
-		Spec_HeadingRef: Spec_HeadingRef,
-		Quantity: Quantity,
-		ParentRef: ParentRef,
-		CG: CG,
-		Moment: Moment,
-		Material_And_Color: Material_And_Color,
-	}
-}
-function BoatPartFeature(BoatPartRef, FeatureRef) {
-	return {
-		BoatPartRef: BoatPartRef,
-		FeatureRef: FeatureRef,
-	}
-}
+
 let tableData = [ // We fill up this object during CSV read
 	{ field:"Heading",         data: new Set() },
 	{ field:"Spec_Heading",    data: new Set() },
