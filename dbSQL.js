@@ -190,6 +190,15 @@ const getFieldRef = async(table, name) => {
 	});
 }
 /**
+ * Test value validity. i.e. Not null or empty string
+ * @param {*} value Hopefully integer, but can be string
+ */
+function valueIsValid (value) {
+	// Either it's truthy, or it's a number whose value is zero.
+	return value || (!isNaN(value) && parseInt(value) === 0)
+}
+
+/**
  * Primary handler for front end requests.
  * @param {object} req Input object. JSON data is in req.body
  * @param {object} res Output. Make sure to write any output into res.json
@@ -248,9 +257,9 @@ const handle_req = (req, res) => {
 				lcg: json.Center_Of_Gravity.long, // range
 				tcg: json.Center_Of_Gravity.tran, // range
 				vcg: json.Center_Of_Gravity.vert, // range
-				lm: json.Moment_Of_Inertia.long, // range
-				tm: json.Moment_Of_Inertia.tran, // range
-				vm: json.Moment_Of_Inertia.vert, // range
+				lm:  json.Moment_Of_Inertia.long, // range
+				tm:  json.Moment_Of_Inertia.tran, // range
+				vm:  json.Moment_Of_Inertia.vert, // range
 			});
 		}
 		// Construct where
@@ -258,24 +267,41 @@ const handle_req = (req, res) => {
 		for (const key in inputObj) {
 			if (inputObj.hasOwnProperty(key)) {
 				const value = inputObj[key];
-				if (value || value === 0) { // truthy or Zero are valid
+				if (key === 'Features') {
+					continue;
+				}
+				if (typeof value === 'object') {// for ranges
+					if (valueIsValid(value.min)) {
+						where.push(key + ">=" + value.min);
+					}
+					if (valueIsValid(value.max)) {
+						where.push(key + ">=" + value.max);
+					}
+				} else if (valueIsValid(value)) { // truthy or Zero are valid
 					where.push(key + "=" + value);
 				}
 			}
 		}
 		// where now contains array of where clauses. Join them with ANDs
-		query = "SELECT * FROM `parts` WHERE " + where.join(' AND ');
+		query = "SELECT * FROM `" + json.dataType + "` WHERE " + where.join(' AND ');
 
+		const t0 = performance.now();
 		connection.query(query, (err, rows, fields) => {
 
 			if (err) throw err;
+
 			res.json({
 				"success": true,
+				"requestTime": performance.now() - t0,
 				...rows
 			});
 		});
 	} else if (json.mode == "write") {
-		//TODO: write
+		if (json.dataType == "parts") { // parts
+			//
+		} else { // boatParts
+			//
+		}
 	} else {
 		res.json({
 			success: false,
