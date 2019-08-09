@@ -307,9 +307,8 @@ const handle_req = (req, res) => {
 			success: false,
 			error: "Invalid mode",
 		});
-		connection.end();
-		return;
 	}
+	connection.end();
 	// res.json({ ...req.body });
 };
 
