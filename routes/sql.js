@@ -23,8 +23,8 @@ const common = require('../common');
 const queryHandler = (req, res, next) => {
 	//connection.connect();
 	t0 = performance.now();
-	console.log(req.body.sql);
-	common.connection.query(req.body.sql)
+	console.log(req);
+	common.connection.query(req)
 		.on('result', rows => {
 			res.json({
 				success: true,
@@ -53,6 +53,10 @@ const queryHandler = (req, res, next) => {
 	});*/
 	//connection.end();
 }
-router.get('/', queryHandler);
-router.post('/', queryHandler);
+router.get('/', (req, res) => {
+	queryHandler(req.query.sql, res, null);
+});
+router.post('/', (req, res) => {
+	queryHandler(req.body.sql, res, null);
+});
 module.exports = router;
