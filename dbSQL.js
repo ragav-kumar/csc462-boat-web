@@ -247,12 +247,12 @@ const handle_req = (req, res) => {
 			});
 		} else { // boatParts
 			inputObj = common.BoatPart(...{
-				BoatPartID: null,
-				BoatRef: json.Boat,
-				PartRef: json.Part,
-				ParentBoatPartRef: json.Parent,
-				LocationRef: getFieldRead("locations", json.Location),
-				Quantity: json.Quantity, // range
+				id: null,
+				boatID: getFieldRef("boats", json.Boat),
+				partID: null,
+				parent: json.Parent,
+				location: getFieldRef("locations", json.Location),
+				quantity: json.Quantity, // range
 				lcg: json.Center_Of_Gravity.long, // range
 				tcg: json.Center_Of_Gravity.tran, // range
 				vcg: json.Center_Of_Gravity.vert, // range
@@ -297,7 +297,7 @@ const handle_req = (req, res) => {
 		});
 	} else if (json.mode == "write") {
 		if (json.dataType == "parts") { // parts
-			//
+			// First 
 		} else { // boatParts
 			//
 		}
