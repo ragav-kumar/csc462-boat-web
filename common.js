@@ -1,3 +1,5 @@
+const mysql = require('mysql');
+
 //Object Constructors
 function Boat(BoatID, Name) {
 	return {
