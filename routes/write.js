@@ -35,8 +35,8 @@ const queryHandler = (req, res) => {
 			randomWords()
 		));
 	}
-	query += values.join(", ");
-	t0 = performance.now();*/
+	query += values.join(", ");*/
+	t0 = performance.now();
 	// console.log(req.sql);
 	pool.getConnection((err, connection) => {
 		const t1 = performance.now() - t0;
