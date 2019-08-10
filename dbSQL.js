@@ -206,7 +206,7 @@ function valueIsValid (value) {
  */
 const handle_req = (req, res) => {
 	connection.connect(); // Stay connected for duration of request
-	const json = req.query;
+	const json = req.body;
 	if (json.mode == "read") {
 		//TODO: read
 		// If a field is present and has a valid value (not empty for strings and >=0 for ints) then its used to filter output
