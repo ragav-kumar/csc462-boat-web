@@ -237,7 +237,7 @@ const handle_req = (req, res) => {
 			inputObj = common.Part(...{
 				id: null,
 				specHeading: getFieldRef("specHeading", json.Spec_Heading),
-				Features: json.Features,
+				//Features: json.Features,
 				model: json.Model,
 				link: json.Hyperlink,
 				source: json.Source,
@@ -253,12 +253,12 @@ const handle_req = (req, res) => {
 				parent: json.Parent,
 				location: getFieldRef("locations", json.Location),
 				quantity: json.Quantity, // range
-				lcg: json.Center_Of_Gravity.long, // range
-				tcg: json.Center_Of_Gravity.tran, // range
-				vcg: json.Center_Of_Gravity.vert, // range
-				lm:  json.Moment_Of_Inertia.long, // range
-				tm:  json.Moment_Of_Inertia.tran, // range
-				vm:  json.Moment_Of_Inertia.vert, // range
+				lcg: json.Center_Of_Gravity ? json.Center_Of_Gravity.long : null, // range
+				tcg: json.Center_Of_Gravity ? json.Center_Of_Gravity.tran : null, // range
+				vcg: json.Center_Of_Gravity ? json.Center_Of_Gravity.vert : null, // range
+				lm:  json.Moment_Of_Inertia ? json.Moment_Of_Inertia.long : null, // range
+				tm:  json.Moment_Of_Inertia ? json.Moment_Of_Inertia.tran : null, // range
+				vm:  json.Moment_Of_Inertia ? json.Moment_Of_Inertia.vert : null, // range
 			});
 		}
 		// Construct where

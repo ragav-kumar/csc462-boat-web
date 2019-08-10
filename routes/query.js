@@ -29,7 +29,9 @@ const dbMongo = require('../dbMongo');
 		});
 
 }); */
-
+router.get('/', (req, res, next) => {
+	dbSQL.handle_req(req, res);
+});
 
 router.post('/', (req, res, next) => {
 	// console.log(JSON.stringify(req.body));
