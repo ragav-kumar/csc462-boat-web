@@ -39,53 +39,50 @@ const queryHandler = (req, res) => {
 	t0 = performance.now();
 	// console.log(req.sql);
 	pool.getConnection((err, connection) => {
-		const t1 = performance.now() - t0;
-		/*connection.query(headingQuery, (err, rows, fields) => {
-			if (err) throw err;
-			connection.query(specHeadingQuery, (err, rows, fields) => {
-				if (err) throw err;
-				connection.query(materialsQuery, (err, rows, fields) => {
-					if(err) throw err;
-					connection.release();
-					res.json({success: true});
-				})
+		if (err) {
+			res.json({
+				success: false,
+				error: err,
 			});
-		})*/
-		console.log("connected");
-		const query = "INSERT INTO `parts` (`specHeading`, `model`, `link`, `source`, `weight`, `material_and_color`, `size`) VALUE (?, ?, ?, ?, ?, ?, ?)";
-		connection.query({
-			sql: query,
-			values: [
-				randInt(90),
-				randomWords(),
-				randomWords(),
-				randomWords(),
-				Math.random() * 500,
-				randInt(33),
-				randomWords()
-			],
-		}, (err, rows, fields) => {
-			console.log("returned");
-			if (err) {
-				res.json({
-					success: false,
-					error: err,
-				})
-			};
-			if (req.timeOnly) {
-				res.json({
-					requestTime: performance.now() - t0,
-					queueTime: t1,
-				});
-			} else {
-				res.json({
-					requestTime: performance.now() - t0,
-					queueTime: t1,
-					data: rows,
-				});
-			}
 			connection.release();
-		})
+		} else {
+			const t1 = performance.now() - t0;
+			// console.log("connected");
+			const query = "INSERT INTO `parts` (`specHeading`, `model`, `link`, `source`, `weight`, `material_and_color`, `size`) VALUE (?, ?, ?, ?, ?, ?, ?)";
+			connection.query({
+				sql: query,
+				values: [
+					randInt(90),
+					randomWords(),
+					randomWords(),
+					randomWords(),
+					Math.random() * 500,
+					randInt(33),
+					randomWords()
+				],
+			}, (err, rows, fields) => {
+				// console.log("returned");
+				if (err) {
+					res.json({
+						success: false,
+						error: err,
+					})
+				} else if (req.timeOnly) {
+					res.json({
+						requestTime: performance.now() - t0,
+						queueTime: t1,
+					});
+				} else {
+					res.json({
+						requestTime: performance.now() - t0,
+						queueTime: t1,
+						data: rows,
+					});
+				}
+				connection.release();
+			})
+		}
+		
 	});
 }
 router.get('/', (req, res, next) => {

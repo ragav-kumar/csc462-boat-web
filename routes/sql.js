@@ -25,28 +25,36 @@ const queryHandler = (req, res, next) => {
 	t0 = performance.now();
 	console.log(req.sql);
 	pool.getConnection((err, connection) => {
-		const t1 = performance.now() - t0;
-		connection.query(req.sql, (err, rows, fields) => {
-			if (err) {
-				res.json({
-					success: false,
-					error: err,
-				})
-			};
-			if (req.timeOnly) {
-				res.json({
-					requestTime: performance.now() - t0,
-					queueTime: t1,
-				});
-			} else {
-				res.json({
-					requestTime: performance.now() - t0,
-					queueTime: t1,
-					data: rows,
-				});
-			}
+		if (err) {
+			res.json({
+				success: false,
+				error: err,
+			});
 			connection.release();
-		})
+		} else {
+			const t1 = performance.now() - t0;
+			connection.query(req.sql, (err, rows, fields) => {
+				if (err) {
+					res.json({
+						success: false,
+						error: err,
+					})
+					connection.release();
+				} else if (req.timeOnly) {
+					res.json({
+						requestTime: performance.now() - t0,
+						queueTime: t1,
+					});
+				} else {
+					res.json({
+						requestTime: performance.now() - t0,
+						queueTime: t1,
+						data: rows,
+					});
+				}
+				connection.release();
+			})
+		}
 	});
 	//connection.end();
 }
