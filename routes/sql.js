@@ -23,8 +23,8 @@ const common = require('../common');
 const queryHandler = (req, res, next) => {
 	//connection.connect();
 	t0 = performance.now();
-	console.log(req.sql);
-	common.connection.query(req.sql)
+	console.log(req.body.sql);
+	common.connection.query(req.body.sql)
 		.on('result', rows => {
 			res.json({
 				success: true,
