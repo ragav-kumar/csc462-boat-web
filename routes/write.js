@@ -5,7 +5,7 @@ const {performance} = require('perf_hooks');
 const mysql = require('mysql');
 const randomWords = require('random-words');
 
-const randInt = max => Math.floor(Math.random() * Math.floor(max));
+const randInt = max => Math.floor(Math.random() * Math.floor(max-1))+1;
 
 
 const pool = mysql.createPool({
