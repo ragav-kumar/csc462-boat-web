@@ -44,7 +44,7 @@ const queryHandler = (req, res) => {
 				success: false,
 				error: err,
 			});
-			connection.release();
+			// connection.release();
 		} else {
 			const t1 = performance.now() - t0;
 			// console.log("connected");

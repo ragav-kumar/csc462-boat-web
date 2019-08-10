@@ -30,7 +30,7 @@ const queryHandler = (req, res, next) => {
 				success: false,
 				error: err,
 			});
-			connection.release();
+			// connection.release();
 		} else {
 			const t1 = performance.now() - t0;
 			connection.query(req.sql, (err, rows, fields) => {
@@ -39,7 +39,6 @@ const queryHandler = (req, res, next) => {
 						success: false,
 						error: err,
 					})
-					connection.release();
 				} else if (req.timeOnly) {
 					res.json({
 						requestTime: performance.now() - t0,
