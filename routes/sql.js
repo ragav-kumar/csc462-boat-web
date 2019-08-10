@@ -24,7 +24,7 @@ const queryHandler = (req, res, next) => {
 	//connection.connect();
 	t0 = performance.now();
 
-	common.query(req.sql)
+	common.connection.query(req.sql)
 		.on('result', rows => {
 			res.json({
 				success: true,
