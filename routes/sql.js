@@ -12,13 +12,13 @@ const mysql = require('mysql');
 const dbSQL = require('../dbSQL');
 const common = require('../common');
 
-/*const pool = mysql.createPool({
+const pool = mysql.createPool({
 	connectionLimit: 10,
 	host:     process.env.MYSQL_host,
 	user:     process.env.MYSQL_user,
 	password: process.env.MYSQL_password,
 	database: process.env.MYSQL_database,
-})*/
+});
 
 const queryHandler = (req, res, next) => {
 	//connection.connect();
