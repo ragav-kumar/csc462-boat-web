@@ -24,7 +24,7 @@ const queryHandler = (req, res, next) => {
 	//connection.connect();
 	t0 = performance.now();
 	console.log(req);
-	common.connection.query(req)
+	/*common.connection.query(req)
 		.on('result', rows => {
 			res.json({
 				success: true,
@@ -38,11 +38,16 @@ const queryHandler = (req, res, next) => {
 				error: err,
 			})
 		})
-	;
-	/*
+	;*/
+	
 	pool.getConnection((err, connection) => {
-		connection.query(req.sql, (err, rows, fields) => {
-			if (err) throw err;
+		connection.query(req, (err, rows, fields) => {
+			if (err) {
+				res.json({
+					success: false,
+					error: err,
+				})
+			};
 	
 			res.json({
 				requestTime: performance.now() - t0,
@@ -50,7 +55,7 @@ const queryHandler = (req, res, next) => {
 			});
 			connection.release();
 		})
-	});*/
+	});
 	//connection.end();
 }
 router.get('/', (req, res) => {
