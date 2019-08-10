@@ -190,6 +190,50 @@ const getFieldRef = async(table, name) => {
 		}
 	});
 }
+const writeAndGetRef = async(table, name) => {
+	connection.query({
+		sql: "SELECT * FROM " + table + " WHERE name=?",
+		values: [name]
+	}, (err, rows, fields) => {
+
+		if (err) throw err;
+		if (rows.length > 0) {
+			return rows[0].id;
+		} else {
+			connection.query({
+				sql: "INSERT INTO " + table + " (`name`) VALUES (?)",
+				values: [name]
+			}, (err, rows, fields) => {
+				if (err) throw err;
+				if (rows.length > 0) {
+					return rows[0].id;
+				}
+			});
+		}
+	});
+}
+const writeAndGetSpecHeadingRef = async(heading, name) => {
+	connection.query({
+		sql: "SELECT * FROM `specHeadings` WHERE name=?",
+		values: [name]
+	}, (err, rows, fields) => {
+
+		if (err) throw err;
+		if (rows.length > 0) {
+			return rows[0].id;
+		} else {
+			connection.query({
+				sql: "INSERT INTO `specHeadings` (`heading`, `name`) VALUES (?, ?)",
+				values: [heading, name]
+			}, (err, rows, fields) => {
+				if (err) throw err;
+				if (rows.length > 0) {
+					return rows[0].id;
+				}
+			});
+		}
+	});
+}
 /**
  * Test value validity. i.e. Not null or empty string
  * @param {*} value Hopefully integer, but can be string
@@ -206,7 +250,7 @@ function valueIsValid (value) {
  */
 const handle_req = (req, res) => {
 	connection.connect(); // Stay connected for duration of request
-	const json = req.body;
+	const json = req.body.mode ? req.body : req.query;
 	if (json.mode == "read") {
 		//TODO: read
 		// If a field is present and has a valid value (not empty for strings and >=0 for ints) then its used to filter output
@@ -237,7 +281,7 @@ const handle_req = (req, res) => {
 		if (json.dataType === "parts") {
 			inputObj = {
 				id: null,
-				specHeading: getFieldRef("specHeading", json.Spec_Heading),
+				specHeading: getFieldRef("specHeadings", json.Spec_Heading),
 				//Features: json.Features,
 				model: json.Model,
 				link: json.Hyperlink,
@@ -299,7 +343,11 @@ const handle_req = (req, res) => {
 		});
 	} else if (json.mode == "write") {
 		if (json.dataType == "parts") { // parts
-			// First 
+			// First write heading and specheading (if not exist). Same for material.
+			// then write part
+			let heading = writeAndGetRef('headings', json.Heading);
+			let material = writeAndGetRef('materials', json.Material_And_Color);
+			let specHeading = writeAndGetSpecHeadingRef(heading, json.Spec_Heading);
 		} else { // boatParts
 			//
 		}
