@@ -25,8 +25,8 @@ const queryHandler = (req, res, next) => {
 	t0 = performance.now();
 	console.log(req.sql);
 	pool.getConnection((err, connection) => {
+		const t1 = performance.now() - t0;
 		connection.query(req.sql, (err, rows, fields) => {
-			const t1 = performance.now() - t0;
 			if (err) {
 				res.json({
 					success: false,

@@ -11,6 +11,7 @@ var queryRouter = require('./routes/query');
 var csvRouter = require('./routes/csv');
 var apiRouter = require('./routes/api');
 var sqlRouter = require('./routes/sql');
+var writeRouter = require('./routes/write');
 
 var app = express();
 
@@ -25,5 +26,6 @@ app.use('/query', queryRouter);
 app.use('/csv', csvRouter);
 app.use('/api', apiRouter);
 app.use('/sql', sqlRouter);
+app.use('/write', writeRouter);
 
 module.exports = app;
