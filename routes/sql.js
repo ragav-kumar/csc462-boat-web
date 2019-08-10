@@ -13,7 +13,7 @@ const dbSQL = require('../dbSQL');
 const common = require('../common');
 
 const pool = mysql.createPool({
-	connectionLimit: 10,
+	connectionLimit: process.env.MYSQL_connection_limit,
 	host:     process.env.MYSQL_host,
 	user:     process.env.MYSQL_user,
 	password: process.env.MYSQL_password,
@@ -24,24 +24,9 @@ const queryHandler = (req, res, next) => {
 	//connection.connect();
 	t0 = performance.now();
 	console.log(req.sql);
-	/*common.connection.query(req)
-		.on('result', rows => {
-			res.json({
-				success: true,
-				requestTime: performance.now() - t0,
-				data: rows,
-			});
-		})
-		.on('error', err => {
-			res.json({
-				success: false,
-				error: err,
-			})
-		})
-	;*/
-	
 	pool.getConnection((err, connection) => {
 		connection.query(req.sql, (err, rows, fields) => {
+			const t1 = performance.now() - t0;
 			if (err) {
 				res.json({
 					success: false,
@@ -49,10 +34,14 @@ const queryHandler = (req, res, next) => {
 				})
 			};
 			if (req.timeOnly) {
-				res.json({requestTime: performance.now() - t0,});
+				res.json({
+					requestTime: performance.now() - t0,
+					queueTime: t1,
+				});
 			} else {
 				res.json({
 					requestTime: performance.now() - t0,
+					queueTime: t1,
 					data: rows,
 				});
 			}
