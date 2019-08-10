@@ -23,7 +23,7 @@ const pool = mysql.createPool({
 const queryHandler = (req, res, next) => {
 	//connection.connect();
 	t0 = performance.now();
-	console.log(req);
+	console.log(req.sql);
 	/*common.connection.query(req)
 		.on('result', rows => {
 			res.json({
@@ -41,7 +41,7 @@ const queryHandler = (req, res, next) => {
 	;*/
 	
 	pool.getConnection((err, connection) => {
-		connection.query(req, (err, rows, fields) => {
+		connection.query(req.sql, (err, rows, fields) => {
 			if (err) {
 				res.json({
 					success: false,
@@ -62,9 +62,9 @@ const queryHandler = (req, res, next) => {
 	//connection.end();
 }
 router.get('/', (req, res) => {
-	queryHandler(req.query.sql, res, null);
+	queryHandler(req.query, res, null);
 });
 router.post('/', (req, res) => {
-	queryHandler(req.body.sql, res, null);
+	queryHandler(req.body, res, null);
 });
 module.exports = router;
