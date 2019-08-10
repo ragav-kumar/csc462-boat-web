@@ -11,18 +11,17 @@ function Spec_Heading(name, heading) {
 		heading: heading,
 	}
 }
-function Part(PartID, HeadingRef, Spec_HeadingRef, Features, Model, Hyperlink, Source, Weight, Material_And_Color, Size) {
+function Part(id, specHeading, Features, model, link, source, weight, material_and_color, size) {
 	return {
-		PartID: PartID,
-		HeadingRef: HeadingRef,
-		Spec_HeadingRef: Spec_HeadingRef,
+		id: id,
+		specHeading: specHeading,
 		Features: Features,
-		Model: Model,
-		Hyperlink: Hyperlink,
-		Source: Source,
-		Weight: Weight,
-		Material_And_Color: Material_And_Color,
-		Size: Size,
+		model: model,
+		link: link,
+		source: source,
+		weight: weight,
+		material_and_color: material_and_color,
+		size: size,
 	}
 }
 function BoatPart(BoatPartID, BoatRef, PartRef, ParentBoatPartRef, LocationRef, Quantity, lcg, tcg, vcg, lm, tm, vm ) {

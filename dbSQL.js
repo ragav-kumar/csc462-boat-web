@@ -235,16 +235,15 @@ const handle_req = (req, res) => {
 		// Check fields. This might require multiple reads.
 		if (json.dataType === "parts") {
 			inputObj = common.Part(...{
-				PartID: null,
-				HeadingRef: getFieldRef("heading", json.Heading),
-				Spec_HeadingRef: getFieldRef("specHeading", json.Spec_Heading),
+				id: null,
+				specHeading: getFieldRef("specHeading", json.Spec_Heading),
 				Features: json.Features,
-				Model: json.Model,
-				Hyperlink: json.Hyperlink,
-				Source: json.Source,
-				Weight: json.Weight, // This is a min-max range
-				Material_And_Color: json.Material_And_Color,
-				Size: json.Size,
+				model: json.Model,
+				link: json.Hyperlink,
+				source: json.Source,
+				weight: json.Weight, // This is a min-max range
+				material_and_color: json.Material_And_Color,
+				size: json.Size,
 			});
 		} else { // boatParts
 			inputObj = common.BoatPart(...{
