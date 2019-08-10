@@ -48,11 +48,14 @@ const queryHandler = (req, res, next) => {
 					error: err,
 				})
 			};
-	
-			res.json({
-				requestTime: performance.now() - t0,
-				...rows,
-			});
+			if (req.timeOnly) {
+				res.json({requestTime: performance.now() - t0,});
+			} else {
+				res.json({
+					requestTime: performance.now() - t0,
+					data: rows,
+				});
+			}
 			connection.release();
 		})
 	});
