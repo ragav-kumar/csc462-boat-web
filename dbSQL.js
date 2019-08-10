@@ -1,5 +1,6 @@
 const common = require('./common');
 
+const {performance} = require('perf_hooks');
 const mysql = require('mysql');
 const connection = mysql.createConnection({
 	host:     process.env.MYSQL_host,
@@ -205,7 +206,7 @@ function valueIsValid (value) {
  */
 const handle_req = (req, res) => {
 	connection.connect(); // Stay connected for duration of request
-	const json = req.body;
+	const json = req.query;
 	if (json.mode == "read") {
 		//TODO: read
 		// If a field is present and has a valid value (not empty for strings and >=0 for ints) then its used to filter output
@@ -234,7 +235,7 @@ const handle_req = (req, res) => {
 		// READ:
 		// Check fields. This might require multiple reads.
 		if (json.dataType === "parts") {
-			inputObj = common.Part(...{
+			inputObj = {
 				id: null,
 				specHeading: getFieldRef("specHeading", json.Spec_Heading),
 				//Features: json.Features,
@@ -244,9 +245,10 @@ const handle_req = (req, res) => {
 				weight: json.Weight, // This is a min-max range
 				material_and_color: json.Material_And_Color,
 				size: json.Size,
-			});
+			};
 		} else { // boatParts
-			inputObj = common.BoatPart(...{
+			// console.log(json);
+			inputObj = {
 				id: null,
 				boatID: getFieldRef("boats", json.Boat),
 				partID: null,
@@ -259,7 +261,7 @@ const handle_req = (req, res) => {
 				lm:  json.Moment_Of_Inertia ? json.Moment_Of_Inertia.long : null, // range
 				tm:  json.Moment_Of_Inertia ? json.Moment_Of_Inertia.tran : null, // range
 				vm:  json.Moment_Of_Inertia ? json.Moment_Of_Inertia.vert : null, // range
-			});
+			};
 		}
 		// Construct where
 		let where = [];
@@ -269,7 +271,7 @@ const handle_req = (req, res) => {
 				if (key === 'Features') {
 					continue;
 				}
-				if (typeof value === 'object') {// for ranges
+				if (typeof value === 'object' && value) {// for ranges
 					if (valueIsValid(value.min)) {
 						where.push(key + ">=" + value.min);
 					}
