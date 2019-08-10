@@ -351,6 +351,8 @@ const handle_req = (req, res) => {
 			let heading = writeAndGetRef('headings', json.Heading);
 			let material = writeAndGetRef('materials', json.Material_And_Color);
 			let specHeading = writeAndGetSpecHeadingRef(heading, json.Spec_Heading);
+			// now can write part
+			
 		} else { // boatParts
 			//
 		}
