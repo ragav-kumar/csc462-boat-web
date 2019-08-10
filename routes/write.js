@@ -54,6 +54,7 @@ const queryHandler = (req, res) => {
 				})
 			});
 		})*/
+		console.log("connected");
 		const query = "INSERT INTO `parts` (`specHeading`, `model`, `link`, `source`, `weight`, `material_and_color`, `size`) VALUE (?, ?, ?, ?, ?, ?, ?)";
 		connection.query({
 			sql: query,
@@ -67,6 +68,7 @@ const queryHandler = (req, res) => {
 				randomWords()
 			],
 		}, (err, rows, fields) => {
+			console.log("returned");
 			if (err) {
 				res.json({
 					success: false,
