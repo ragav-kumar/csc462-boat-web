@@ -328,7 +328,10 @@ const handle_req = (req, res) => {
 			}
 		}
 		// where now contains array of where clauses. Join them with ANDs
-		query = "SELECT * FROM `" + json.dataType + "` WHERE " + where.join(' AND ');
+		query = "SELECT * FROM `" + json.dataType + "`";
+		if (where.length > 0) {
+			query += " WHERE " + where.join(' AND ');
+		}
 
 		const t0 = performance.now();
 		connection.query(query, (err, rows, fields) => {
