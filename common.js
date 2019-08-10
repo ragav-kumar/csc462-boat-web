@@ -24,14 +24,14 @@ function Part(id, specHeading, Features, model, link, source, weight, material_a
 		size: size,
 	}
 }
-function BoatPart(BoatPartID, BoatRef, PartRef, ParentBoatPartRef, LocationRef, Quantity, lcg, tcg, vcg, lm, tm, vm ) {
+function BoatPart(id, boatID, partID, parent, location, quantity, lcg, tcg, vcg, lm, tm, vm ) {
 	return {
-		BoatPartID: BoatPartID,
-		BoatRef: BoatRef,
-		PartRef: PartRef,
-		ParentBoatPartRef: ParentBoatPartRef,
-		LocationRef: LocationRef,
-		Quantity: Quantity,
+		id: id,
+		boatID: boatID,
+		partID: partID,
+		parent: parent,
+		location: location,
+		quantity: quantity,
 		lcg: lcg,
 		tcg: tcg,
 		vcg: vcg,
@@ -40,16 +40,16 @@ function BoatPart(BoatPartID, BoatRef, PartRef, ParentBoatPartRef, LocationRef, 
 		vm: vm,
 	}
 }
-function BoatPartFeature(BoatPartRef, FeatureRef) {
+function PartFeature(part, feature) {
 	return {
-		BoatPartRef: BoatPartRef,
-		FeatureRef: FeatureRef,
+		part: part,
+		feature: feature,
 	}
 }
 module.exports = {
 	Boat,
 	Part,
 	BoatPart,
-	BoatPartFeature,
+	PartFeature,
 	Spec_Heading,
 }
